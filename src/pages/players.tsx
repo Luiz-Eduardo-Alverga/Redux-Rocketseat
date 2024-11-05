@@ -1,23 +1,21 @@
 import { MessageCircle } from 'lucide-react'
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
 
 import { Header } from '../components/header'
 import { Module } from '../components/Module'
 import { Video } from '../components/Video'
-import { api } from '../lib/axios'
-import { useAppSelector } from '../store'
-import { start } from '../store/slices/player'
+import { useStore } from '../zustand-store'
 
 export function Player() {
-  const dispatch = useDispatch()
-  const modules = useAppSelector((state) => state.player.course?.modules)
+  const { course, load } = useStore((store) => {
+    return {
+      course: store.course,
+      load: store.load,
+    }
+  })
 
   useEffect(() => {
-    api.get('/courses/1').then((response) => {
-      console.log(response.data)
-      dispatch(start(response.data))
-    })
+    load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -39,8 +37,8 @@ export function Player() {
           </div>
 
           <aside className="w-80 absolute top-0 divide-y-2 divide-zinc-900 bottom-0 right-0 overflow-y-scroll border-l border-zinc-800 bg-zinc-900 scrollbar-thin scrollbar-track-zinc-950 scrollbar-thumb-zinc-800">
-            {modules &&
-              modules.map((module, index) => (
+            {course?.modules &&
+              course?.modules.map((module, index) => (
                 <Module
                   key={module.id}
                   moduleIndex={index}
